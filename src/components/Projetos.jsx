@@ -1,4 +1,21 @@
+
 function Projetos({ projetos }) {
+  // Função para renderizar os links extras (se houver)
+  const renderizarLinksExtras = (links) => {
+    if (!links || links.length === 0) return null;
+    return (
+      <div className="links-extras" style={{ marginTop: '1rem', borderTop: '1px dashed #ccc', paddingTop: '0.8rem' }}>
+        {links.map((link, idx) => (
+          <p key={idx} style={{ margin: '0.3rem 0' }}>
+            <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.8rem', color: '#0a2b3e', textDecoration: 'none', borderBottom: '1px dotted #4caf50' }}>
+              {link.nome}
+            </a>
+          </p>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <section id="projetos" style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <h2 style={{ fontSize: '2rem', borderLeft: '5px solid #4caf50', paddingLeft: '1rem' }}>📡 Meus Projetos Estratégicos</h2>
@@ -15,6 +32,7 @@ function Projetos({ projetos }) {
                 ))}
               </div>
               <a href={projeto.link} target="_blank" rel="noopener noreferrer" style={{ background: '#0a2b3e', color: 'white', padding: '0.5rem 1rem', borderRadius: '30px', textDecoration: 'none', display: 'inline-block' }}>🔗 Ver no GitHub</a>
+              {renderizarLinksExtras(projeto.linksExtras)}
             </div>
           </div>
         ))}
