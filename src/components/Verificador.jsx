@@ -5,9 +5,10 @@ const Verificador = () => {
   const [testesIniciados, setTestesIniciados] = useState(0);
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
-  const [etapa, setEtapa] = useState('email'); // 'email', 'perguntas', 'resultado'
+  const [etapa, setEtapa] = useState('email');
   const [respostas, setRespostas] = useState(Array(7).fill(null));
   const [score, setScore] = useState(null);
+  const [percentual, setPercentual] = useState(0);
   const [frase, setFrase] = useState('');
 
   const perguntas = [
@@ -56,27 +57,29 @@ const Verificador = () => {
       return;
     }
     const total = respostas.filter(r => r === true).length;
+    const perc = Math.round((total / 7) * 100);
     let texto = '';
     if (total <= 2) texto = "📘 Educativa: Você ainda está no início da jornada quântica. Comece ativando o 2FA e conhecendo os riscos.";
     else if (total <= 4) texto = "🚀 Motivadora: Bom caminho! Com pequenos ajustes, sua resiliência quântica vai disparar.";
     else if (total <= 6) texto = "🧠 Inteligente: Você está acima da média. Continue acompanhando as normas do ITI.";
     else texto = "🏆 Técnica: Excelente! Você domina as práticas atuais e já pensa no futuro pós-quântico. Quem age agora protege o amanhã.";
     setScore(total);
+    setPercentual(perc);
     setFrase(texto);
     setEtapa('resultado');
   };
 
   const enviarEmailSimulado = () => {
-    alert(`✅ (Simulação) Resultado enviado para ${email}\n\nSeu IRQ: ${score}/7\n${frase}`);
+    alert(`✅ (Simulação) Resultado enviado para ${email}\n\nSeu IRQ: ${score}/7 (${percentual}%)\n${frase}`);
   };
 
   const copiarResultado = () => {
-    navigator.clipboard.writeText(`Meu IRQ: ${score}/7\n${frase}`);
+    navigator.clipboard.writeText(`Meu IRQ: ${score}/7 (${percentual}%)\n${frase}`);
     alert('Resultado copiado!');
   };
 
   const compartilharWhatsApp = () => {
-    const texto = `Meu IRQ: ${score}/7 - ${frase}`;
+    const texto = `Meu IRQ: ${score}/7 (${percentual}%) - ${frase}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
   };
 
@@ -116,7 +119,7 @@ const Verificador = () => {
 
       {etapa === 'resultado' && (
         <div className="resultado-area">
-          <div className="irq-score">Seu IRQ: {score}/7</div>
+          <div className="irq-score">Seu IRQ: {score}/7 ({percentual}%)</div>
           <div>{frase}</div>
           <div style={{ marginTop: '1rem' }}>
             <button onClick={enviarEmailSimulado} className="btn-enviar">📧 Enviar resultado</button>
