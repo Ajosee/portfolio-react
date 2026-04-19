@@ -1,3 +1,4 @@
+
 export const projetos = [
   {
     id: 1,
@@ -48,5 +49,16 @@ export const projetos = [
         url: "https://www.gov.br/governodigital/pt-br/privacidade-e-seguranca/legislacao-federal"
       }
     ]
+  },
+  {
+    id: 4,
+    titulo: "Verificador de Resiliência Quântica (IRQ)",
+    descricao: "Responda 5 perguntas rápidas e descubra seu Índice de Resiliência Quântica. O resultado mostra o quão preparado você está para o futuro da computação.",
+    tecnologias: ["HTML", "CSS", "JavaScript", "LocalStorage"],
+    imagem: "https://placehold.co/600x400/0a1c2a/4caf50?text=IRQ+Verificador",
+    link: "https://ajosee.github.io/aula2/",
+    linksExtras: [] // vazio, pois já tem o link principal
   }
 ];
+^x
+
