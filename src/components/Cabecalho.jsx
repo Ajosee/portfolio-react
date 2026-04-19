@@ -1,3 +1,4 @@
+import AcessibilidadeToolbar from "./AcessibilidadeToolbar";
 
 function Cabecalho() {
   return (
@@ -13,6 +14,7 @@ function Cabecalho() {
         <a href="#sobre" style={{ color: 'white', margin: '0 1rem' }}>Sobre</a>
         <a href="#projetos" style={{ color: 'white', margin: '0 1rem' }}>Projetos</a>
       </nav>
+        <AcessibilidadeToolbar />
     </header>
   );
 }

@@ -1,5 +1,4 @@
 
-import AcessibilidadeToolbar from "./components/AcessibilidadeToolbar";
 import Cabecalho from './components/Cabecalho';
 import Sobre from './components/Sobre';
 import Projetos from './components/Projetos';
