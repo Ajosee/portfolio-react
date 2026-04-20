@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Cabecalho from './components/Cabecalho';
 import Sobre from './components/Sobre';
 import Projetos from './components/Projetos';
@@ -6,6 +6,22 @@ import Verificador from './components/Verificador';
 import { projetos } from './data/projetosData';
 
 function App() {
+  const [visitas, setVisitas] = useState(0);
+  const [testesIniciados, setTestesIniciados] = useState(0);
+
+  useEffect(() => {
+    const atualizarContadores = () => {
+      const visitCount = localStorage.getItem('visitas_irq');
+      setVisitas(visitCount ? Number(visitCount) : 0);
+      const testesCount = localStorage.getItem('testes_iniciados_irq');
+      setTestesIniciados(testesCount ? Number(testesCount) : 0);
+    };
+
+    atualizarContadores();
+    window.addEventListener('storage', atualizarContadores);
+    return () => window.removeEventListener('storage', atualizarContadores);
+  }, []);
+
   return (
     <div>
       <Cabecalho />
@@ -23,7 +39,7 @@ function App() {
           🛡️ Alinhado à Estratégia Nacional de Cibersegurança (Decreto 12.573/2025)<br />
           📜 Conforme normas do ITI para ICP-Brasil | 🔒 LGPD<br />
           ♿ Acessibilidade: WCAG 2.1 AA<br />
-          📊 <span id="contadorVisitantes">Carregando...</span> | 🧪 <span id="contadorTestes">Carregando...</span>
+          📊 Visitantes: {visitas} | 🧪 Testes iniciados: {testesIniciados}
         </div>
         <a href="#" className="voltar-topo" id="voltarTopo">↥ Voltar ao topo</a>
       </footer>
