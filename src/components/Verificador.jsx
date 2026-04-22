@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import emailjs from '@emailjs/browser';
 
 const Verificador = () => {
   const [visitas, setVisitas] = useState(0);
@@ -20,6 +21,8 @@ const Verificador = () => {
     { texto: "Você utiliza criptografia de ponta a ponta em aplicações sensíveis (e-mail, mensagens)?", opcaoNao: "❌ Não uso" },
     { texto: "Você já ouviu falar sobre algoritmos pós-quânticos (CRYSTALS-Kyber) e acompanha as recomendações do NIST/ITI?", opcaoNao: "❌ Não conheço" }
   ];
+
+  emailjs.init("7TC5If25qSsb3p-0S");
 
   useEffect(() => {
     let visitCount = localStorage.getItem('visitas_irq');
@@ -69,8 +72,24 @@ const Verificador = () => {
     setEtapa('resultado');
   };
 
-  const enviarEmailSimulado = () => {
-    alert(`✅ (Simulação) Resultado enviado para ${email}\n\nSeu IRQ: ${score}/7 (${percentual}%)\n${frase}`);
+  const enviarEmailReal = (score, frase) => {
+    if (!email) {
+      alert("E-mail não informado.");
+      return;
+    }
+    const perc = Math.round((score / 7) * 100);
+    emailjs.send("service_3ea5o84", "template_1g9ou0p", {
+      to_email: email,
+      irq: `${score}/7`,
+      percentual: perc,
+      frase: frase,
+      data: new Date().toLocaleString("pt-BR")
+    }).then(() => {
+      alert("✅ Resultado enviado para seu e-mail!");
+    }).catch((error) => {
+      console.error(error);
+      alert("❌ Falha ao enviar. Verifique suas credenciais do EmailJS.");
+    });
   };
 
   const copiarResultado = () => {
@@ -122,7 +141,7 @@ const Verificador = () => {
           <div className="irq-score">Seu IRQ: {score}/7 ({percentual}%)</div>
           <div>{frase}</div>
           <div style={{ marginTop: '1rem' }}>
-            <button onClick={enviarEmailSimulado} className="btn-enviar">📧 Enviar resultado</button>
+            <button onClick={() => enviarEmailReal(score, frase)} className="btn-enviar">📧 Enviar resultado</button>
             <button onClick={copiarResultado} className="btn-copiar">📋 Copiar resultado</button>
             <button onClick={compartilharWhatsApp} className="btn-compartilhar">📱 Compartilhar</button>
           </div>
