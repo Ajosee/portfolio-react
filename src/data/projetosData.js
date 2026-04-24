@@ -57,7 +57,6 @@ export const projetos = [
         url: "https://www.gov.br/governodigital/pt-br/privacidade-e-seguranca/legislacao-federal"
       },
       {
-        nome: "🔬 Simulador Interativo (Algoritmo de Shor)",
         url: "/simulador.html",
         target: "_blank"
       }
