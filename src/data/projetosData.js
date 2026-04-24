@@ -10,7 +10,18 @@ export const projetos = [
       {
         nome: "🔗 Centro Internacional de Computação Quântica (CIQuanta)",
         url: "https://www.gov.br/mcti/pt-br/acompanhe-o-mcti/noticias/2026/04/centro-internacional-de-computacao-quantica-no-brasil-sera-um-polo-de-inovacao-e-capacitacao"
+      },
+      {
+        nome: "🔬 Simulador Interativo (Algoritmo de Shor)",
+        url: "/simulador.html",
+        target: "_blank"
       }
+    ]
+      {
+        nome: "🔗 Centro Internacional de Computação Quântica (CIQuanta)",
+        url: "https://www.gov.br/mcti/pt-br/acompanhe-o-mcti/noticias/2026/04/centro-internacional-de-computacao-quantica-no-brasil-sera-um-polo-de-inovacao-e-capacitacao"
+      }
+      { nome: "🔬 Simulador Interativo (Algoritmo de Shor)", url: "/simulador.html", target: "_blank" },
     ]
   },
   {
