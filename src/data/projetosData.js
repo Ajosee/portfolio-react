@@ -17,12 +17,6 @@ export const projetos = [
         target: "_blank"
       }
     ]
-      {
-        nome: "🔗 Centro Internacional de Computação Quântica (CIQuanta)",
-        url: "https://www.gov.br/mcti/pt-br/acompanhe-o-mcti/noticias/2026/04/centro-internacional-de-computacao-quantica-no-brasil-sera-um-polo-de-inovacao-e-capacitacao"
-      }
-      { nome: "🔬 Simulador Interativo (Algoritmo de Shor)", url: "/simulador.html", target: "_blank" },
-    ]
   },
   {
     id: 2,
@@ -39,6 +33,10 @@ export const projetos = [
       {
         nome: "🔗 ITI publica incorporação de algoritmos pós-quânticos",
         url: "https://www.gov.br/iti/pt-br/assuntos/noticias/indice-de-noticias/iti-publica-instrucao-normativa-que-incorpora-algoritmos-pos-quanticos-a-icp-brasil"
+      },
+      {
+        url: "/simulador.html",
+        target: "_blank"
       }
     ]
   },
@@ -57,6 +55,11 @@ export const projetos = [
       {
         nome: "📚 Legislação Federal em Segurança da Informação",
         url: "https://www.gov.br/governodigital/pt-br/privacidade-e-seguranca/legislacao-federal"
+      },
+      {
+        nome: "🔬 Simulador Interativo (Algoritmo de Shor)",
+        url: "/simulador.html",
+        target: "_blank"
       }
     ]
   }
