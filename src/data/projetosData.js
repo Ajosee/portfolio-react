@@ -5,7 +5,7 @@ export const projetos = [
     descricao: "Ferramenta interativa que demonstra como um computador quântico quebra a criptografia RSA em minutos. Educativa e impactante.",
     tecnologias: ["JavaScript", "WebAssembly", "Qiskit"],
     imagem: "https://placehold.co/600x400/0a1c2a/4caf50?text=Simulador+Quântico",
-    link: "https://github.com/antoniojbsilva/simulador-quantico",
+    link: "https://github.com/Ajosee",
     linksExtras: [
       {
         nome: "🔗 Centro Internacional de Computação Quântica (CIQuanta)",
@@ -24,7 +24,7 @@ export const projetos = [
     descricao: "Documento interativo com cronograma e algoritmos recomendados pelo Instituto Nacional de Tecnologia da Informação.",
     tecnologias: ["HTML", "CSS", "Markdown", "LGPD"],
     imagem: "https://placehold.co/600x400/0a1c2a/4caf50?text=Guia+ITI",
-    link: "https://github.com/antoniojbsilva/guia-iti-posquantico",
+    link: "https://github.com/Ajosee",
     linksExtras: [
       {
         nome: "📄 Instrução Normativa ITI nº 35/2026 (DOU)",
@@ -46,7 +46,7 @@ export const projetos = [
     descricao: "Dashboard que acompanha em tempo real os indicadores da Estratégia Nacional de Cibersegurança (Decreto 12.573/2025).",
     tecnologias: ["React", "D3.js", "API Gov"],
     imagem: "https://placehold.co/600x400/0a1c2a/4caf50?text=E-Ciber+Monitor",
-    link: "https://github.com/antoniojbsilva/monitor-eciber",
+    link: "https://github.com/Ajosee",
     linksExtras: [
       {
         nome: "⚖️ Decreto nº 12.573/2025 (E-Ciber)",
