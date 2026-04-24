@@ -1,10 +1,10 @@
-import AnaliseRisco from './components/AnaliseRisco';
-import CuriosityAnimation from './components/CuriosityAnimation';
 import React, { useState, useEffect } from 'react';
 import Cabecalho from './components/Cabecalho';
 import Sobre from './components/Sobre';
 import Projetos from './components/Projetos';
 import Verificador from './components/Verificador';
+import AnaliseRisco from './components/AnaliseRisco';
+import CuriosityAnimation from './components/CuriosityAnimation';
 import { projetos } from './data/projetosData';
 
 function App() {
@@ -18,7 +18,6 @@ function App() {
       const testesCount = localStorage.getItem('testes_iniciados_irq');
       setTestesIniciados(testesCount ? Number(testesCount) : 0);
     };
-
     atualizarContadores();
     window.addEventListener('storage', atualizarContadores);
     return () => window.removeEventListener('storage', atualizarContadores);
@@ -29,16 +28,16 @@ function App() {
       <Cabecalho />
       <CuriosityAnimation />
       <main>
-       <AnaliseRisco />
+        <AnaliseRisco />
         <Sobre />
         <Projetos projetos={projetos} />
         <Verificador />
       </main>
       <footer>
         <p>© 2026 – Antonio J.B. Silva | Verificador de Segurança Pessoal – Era Quântica</p>
-         <div className="footer-links">
-  <a href="#">🔗 GitHub</a> | <a href="#">💼 LinkedIn</a> | <a href="#">📄 Lattes</a> | <a href="#">✉️ antonio@ajbsilva.tec.br</a> | <a href="/privacidade.html">🔒 Privacidade (LGPD)</a>
-</div>
+        <div className="footer-links">
+          <a href="https://github.com/Ajosee" target="_blank" rel="noopener noreferrer">🔗 GitHub</a> | <a href="javascript:void(0)" style={{ cursor: "pointer" }}>💼 LinkedIn</a> | <a href="javascript:void(0)" style={{ cursor: "pointer" }}>📄 Lattes</a> | <a href="mailto:antonio@ajbsilva.tec.br">✉️ antonio@ajbsilva.tec.br</a> | <a href="/privacidade.html">🔒 Privacidade (LGPD)</a>
+        </div>
         <div className="credito-frase">
           🛡️ Alinhado à Estratégia Nacional de Cibersegurança (Decreto 12.573/2025)<br />
           📜 Conforme normas do ITI para ICP-Brasil | 🔒 LGPD<br />

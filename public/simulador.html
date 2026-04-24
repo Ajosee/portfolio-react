@@ -6,6 +6,7 @@
     <title>⚛️ Simulador Quântico Avançado: Shor + Grover</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* (mesmo estilo anterior) */
         .simulador-container { max-width: 1000px; margin: 2rem auto; padding: 2rem; background: var(--card-bg, white); border-radius: 24px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .tabs { display: flex; gap: 1rem; border-bottom: 2px solid #ccc; margin-bottom: 2rem; }
         .tab-btn { background: none; border: none; padding: 0.8rem 1.5rem; font-weight: bold; cursor: pointer; color: var(--text-primary, #1a2a3a); }
@@ -33,7 +34,7 @@
 <main>
 <div class="simulador-container">
     <h1>⚛️ Simulador de Ataques Quânticos</h1>
-    <p>Demonstração educacional de dois algoritmos quânticos: <strong>Shor</strong> (quebra de criptografia RSA) e <strong>Grover</strong> (quebra de senhas/sistemas de busca).</p>
+    <p>Demonstração educacional de dois algoritmos quânticos: <strong>Shor</strong> (quebra de criptografia RSA) e <strong>Grover</strong> (busca/descoberta de senhas).</p>
 
     <div class="tabs">
         <button id="tabShorBtn" class="tab-btn active">🔑 Fatoração RSA (Shor)</button>
@@ -58,22 +59,13 @@
         <div id="fraseShor" class="frase-final" style="display:none;"></div>
     </div>
 
-    <!-- ABA GROVER -->
+    <!-- ABA GROVER (com suporte a senhas de até 50 caracteres alfanuméricos) -->
     <div id="groverContent" class="tab-content">
         <h2>Algoritmo de Grover – Busca Quântica / Quebra de Senhas</h2>
-        <p>Simula como um computador quântico pode encontrar uma senha (ou elemento não ordenado) com aceleração quadrática: O(√N) tentativas, contra O(N) clássico.</p>
+        <p>Simula a aceleração quadrática na busca por uma senha. O espaço de busca total é gigantesco, mas a aceleração quântica reduz drasticamente o número de tentativas.</p>
         <div class="input-group">
-            <label>Defina a senha (número ou texto curto, até 4 caracteres):</label>
-            <input type="text" id="senhaGrover" placeholder="ex: 1234, abc, 7" maxlength="4">
-        </div>
-        <div class="input-group">
-            <label>Espaço de busca (tamanho máximo):</label>
-            <select id="tamanhoEspaco">
-                <option value="10">10 (0-9)</option>
-                <option value="100">100 (00-99)</option>
-                <option value="1000">1000 (000-999)</option>
-                <option value="10000" selected>10.000 (0000-9999)</option>
-            </select>
+            <label>Defina a senha (até 50 caracteres, letras/números/símbolos):</label>
+            <input type="text" id="senhaGrover" maxlength="50" placeholder="Ex: P@ssw0rd!Segura">
         </div>
         <button id="quebrarSenhaBtn">🔍 Simular Ataque Quântico (Grover)</button>
         <button id="aleatorioSenhaBtn">🎲 Gerar Senha Aleatória</button>
@@ -102,9 +94,7 @@
         const div = document.getElementById(divId);
         div.innerHTML = `<strong>${divId === 'logShor' ? 'Log do algoritmo:' : 'Log da busca quântica:'}</strong><br>Aguardando início.`;
     }
-    function updateProgress(id, percent) {
-        document.getElementById(id).style.width = `${percent}%`;
-    }
+    function updateProgress(id, percent) { document.getElementById(id).style.width = `${percent}%`; }
 
     // ================== ALGORITMO DE SHOR ==================
     function gcd(a, b) { while (b !== 0n) { [a, b] = [b, a % b]; } return a; }
@@ -149,10 +139,7 @@
     fatorarBtn.onclick = async () => {
         let N = BigInt(parseInt(numeroShor.value));
         if (N < 2n) { alert("Número maior que 1"); return; }
-        if (N > 1000000n) {
-            warnShor.innerText = "Número muito grande pode tornar a simulação lenta. Recomendado até 10.000.";
-            await delay(500);
-        } else warnShor.innerText = '';
+        if (N > 1000000n) { warnShor.innerText = "Número muito grande pode tornar a simulação lenta. Recomendado até 10.000."; await delay(500); } else warnShor.innerText = '';
         clearLog('logShor');
         resultadoShor.innerHTML = '<strong>Resultado:</strong> Executando ataque quântico...';
         document.getElementById('probShor').style.display = 'none';
@@ -180,64 +167,78 @@
         updateProgress('progressShor', 100);
     };
 
-    // ================== ALGORITMO DE GROVER ==================
+    // ================== ALGORITMO DE GROVER (SENHA ALFANUMÉRICA) ==================
     const senhaGrover = document.getElementById('senhaGrover');
-    const tamanhoEspaco = document.getElementById('tamanhoEspaco');
     const quebrarSenha = document.getElementById('quebrarSenhaBtn');
     const aleatorioSenha = document.getElementById('aleatorioSenhaBtn');
     const resultadoGrover = document.getElementById('resultadoGrover');
+    const logGroverDiv = document.getElementById('logGrover');
     const fraseGrover = document.getElementById('fraseGrover');
-    aleatorioSenha.onclick = () => {
-        const size = parseInt(tamanhoEspaco.value);
-        const randomNum = Math.floor(Math.random() * size);
-        const padLen = String(size-1).length;
-        const padded = String(randomNum).padStart(padLen, '0');
-        senhaGrover.value = padded;
-    };
-    quebrarSenha.onclick = async () => {
-        const target = senhaGrover.value.trim();
-        if (target === "") { alert("Digite uma senha ou gere aleatória."); return; }
-        const spaceSize = parseInt(tamanhoEspaco.value);
-        let targetNum = parseInt(target);
-        if (isNaN(targetNum)) {
-            alert("Para simplicidade, use números (ex: 1234). Convertendo caractere para código.");
-            targetNum = target.charCodeAt(0) % spaceSize;
+
+    // Gera uma senha aleatória de 6 a 12 caracteres segura
+    function gerarSenhaAleatoria() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
+        let senha = '';
+        const comprimento = Math.floor(Math.random() * 12) + 6; // entre 6 e 17 caracteres
+        for (let i = 0; i < comprimento; i++) {
+            senha += chars[Math.floor(Math.random() * chars.length)];
         }
-        if (targetNum >= spaceSize) {
-            alert(`A senha deve ser um número entre 0 e ${spaceSize-1} (ou corresponder ao espaço).`);
+        return senha;
+    }
+
+    aleatorioSenha.onclick = () => {
+        senhaGrover.value = gerarSenhaAleatoria();
+    };
+
+    quebrarSenha.onclick = async () => {
+        const senha = senhaGrover.value.trim();
+        if (senha === "") {
+            alert("Digite uma senha ou gere uma aleatória.");
             return;
         }
+        if (senha.length > 50) {
+            alert("A senha pode ter no máximo 50 caracteres.");
+            return;
+        }
+
         clearLog('logGrover');
-        resultadoGrover.innerHTML = '<strong>Resultado:</strong> Executando busca quântica...';
+        resultadoGrover.innerHTML = '<strong>Resultado:</strong> Executando busca quântica conceitual...';
         fraseGrover.style.display = 'none';
         updateProgress('progressGrover', 0);
-        logMessage('logGrover', `Iniciando algoritmo de Grover para encontrar senha no espaço de ${spaceSize} elementos.`);
-        logMessage('logGrover', `Senha alvo: ${targetNum}`);
-        const iterQuanticas = Math.ceil(Math.sqrt(spaceSize));
-        let found = false;
-        for (let i = 1; i <= iterQuanticas; i++) {
-            await delay(200);
-            logMessage('logGrover', `Iteração quântica ${i}/${iterQuanticas}...`);
-            updateProgress('progressGrover', (i / iterQuanticas) * 100);
-            // Simula probabilidade de sucesso aumentando com iterações
-            const prob = Math.min(1, i / iterQuanticas * 1.2);
-            if (Math.random() < prob) {
-                found = true;
-                logMessage('logGrover', `✨ Sucesso! A medição colapsou no estado correspondente à senha ${targetNum}.`);
-                break;
-            }
+
+        // Conjunto de caracteres possíveis (95 caracteres imprimíveis ASCII básico)
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
+        const tamanhoEspaco = Math.pow(chars.length, senha.length); // N total de combinações (teórico)
+        const tentativasClassicas = Math.floor(tamanhoEspaco / 2); // média clássica
+        const tentativasQuanticas = Math.ceil(Math.sqrt(tamanhoEspaco)); // Grover: √N
+
+        logMessage('logGrover', `Senha alvo: "${senha}" (comprimento = ${senha.length})`);
+        logMessage('logGrover', `Conjunto de caracteres possíveis: ${chars.length} símbolos.`);
+        logMessage('logGrover', `Espaço de busca total: ${tamanhoEspaco.toExponential(2)} combinações.`);
+        logMessage('logGrover', `Tentativas clássicas (busca exaustiva média): ${tentativasClassicas.toExponential(2)}`);
+        logMessage('logGrover', `Tentativas com algoritmo de Grover (aceleração quadrática): ${tentativasQuanticas.toExponential(2)}`);
+        
+        // Simulação progressiva (apenas demonstrativa)
+        for (let i = 1; i <= 5; i++) {
+            await delay(400);
+            logMessage('logGrover', `Iteração quântica simulada ${i}/5...`);
+            updateProgress('progressGrover', (i / 5) * 100);
         }
-        if (found) {
-            const classicNeeded = Math.floor(spaceSize / 2);
-            resultadoGrover.innerHTML = `<strong>✅ SENHA DESCOBERTA!</strong><br>Senha encontrada: ${targetNum}<br>Número de tentativas quânticas simuladas: ${iterQuanticas}<br>Número de tentativas clássicas necessárias (média): ${classicNeeded}<br>🚀 Aceleração quadrática: O(√N) vs O(N).`;
-            fraseGrover.style.display = 'block';
-            fraseGrover.innerHTML = `🔐 Algoritmo de Grover ameaça sistemas de busca, criptografia simétrica (AES-256 tem segurança reduzida pela metade) e funções hash. Apesar de não quebrar AES-256 completamente, reduz sua segurança efetiva.`;
-        } else {
-            resultadoGrover.innerHTML = `<strong>❌ Falha na busca.</strong><br>O algoritmo de Grover é probabilístico; com mais iterações (O(√N)) a chance de sucesso se aproxima de 100%. Tente novamente.`;
-            fraseGrover.style.display = 'block';
-            fraseGrover.innerHTML = `💡 A aceleração quântica é real, mas ruídos e limitações de qubits atuais impedem a aplicação prática para espaços muito grandes.`;
-        }
+        
         updateProgress('progressGrover', 100);
+        const sucesso = true; // simular sucesso
+        if (sucesso) {
+            resultadoGrover.innerHTML = `<strong>✅ SENHA DESCOBERTA (SIMULAÇÃO)!</strong><br>
+            Senha: ${senha}<br>
+            <strong>Conceito de Grover:</strong> Um computador quântico precisaria de aproximadamente <strong>${tentativasQuanticas.toExponential(2)}</strong> tentativas (raiz quadrada do espaço de busca), enquanto um computador clássico precisaria de <strong>${tentativasClassicas.toExponential(2)}</strong> tentativas em média.<br>
+            🚀 Isse demonstra a aceleração quadrática do algoritmo de Grover. Para senhas longas, a vantagem quântica é astronômica.`;
+            fraseGrover.style.display = 'block';
+            fraseGrover.innerHTML = `🔐 <strong>Implicação prática:</strong> Senhas comuns (curtas) seriam quebradas rapidamente por um computador quântico com Grover. Para manter segurança, recomenda‑se dobrar o comprimento da senha ou usar criptografia pós‑quântica.`;
+        } else {
+            resultadoGrover.innerHTML = `<strong>❌ Falha na busca.</strong><br>O algoritmo de Grover tem alta probabilidade de sucesso após O(√N) iterações. Nesta simulação, assumimos sucesso para fins educacionais.`;
+            fraseGrover.style.display = 'block';
+            fraseGrover.innerHTML = `💡 A aceleração quântica é real, mas computadores quânticos práticos ainda não estão disponíveis para tais ataques.`;
+        }
     };
 
     // Tabs
