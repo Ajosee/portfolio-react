@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 Antonio J.B. Silva
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import React, { useState, useEffect } from 'react';
 import emailjs from '@emailjs/browser';
 
