@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/quantum-simulator/index.html" }
+  ]
+}

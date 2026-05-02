@@ -1,0 +1,30 @@
+import logo from './logo.svg';
+import './App.css';
+import QuantumSimulatorLink from "./QuantumSimulatorLink";
+
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
+      <QuantumSimulatorLink />
+    <div style={{ textAlign: "center", margin: "2rem" }}><a href="/quantum-simulator/index.html" target="_blank" style={{ display: "inline-block", background: "#4caf50", color: "#0a0f1c", padding: "0.5rem 1rem", borderRadius: "0.5rem", textDecoration: "none", fontWeight: "bold" }}>🚀 Acessar Simulador Quântico (PQC)</a><p style={{}}>📧 Contato: antoniojb30@hotmail.com</p>
+      </div>
+        <QuantumSimulatorLink />
+</div>
+  );
+}
+
+export default App;

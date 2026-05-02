@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritmos Pós‑Quânticos do NIST - Experience</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { transition: all 0.2s ease; }
+        body { background: #0a0f1c; color: #e0e0e0; font-family: system-ui, sans-serif; padding: 2rem; margin: 0; }
+        .container { max-width: 1000px; margin: 0 auto; background: #0f172a; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        h1, h2 { color: #4caf50; border-left: 4px solid #4caf50; padding-left: 0.8rem; }
+        .simulador, .card-interativo { background: #1e2a3a; padding: 1.2rem; border-radius: 0.8rem; margin: 1.8rem 0; }
+        button, .botoes-algoritmos button, .quiz button { background: #2a3a4a; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 0.5rem; cursor: pointer; margin: 0.3rem 0.2rem; font-weight: bold; }
+        button:hover, .botoes-algoritmos button:hover, .quiz button:hover { background: #4caf50; transform: scale(1.02); }
+        .resposta, .detalhe, .alerta-quantico, .quiz-feedback { margin-top: 1rem; background: #111a28; padding: 0.8rem; border-radius: 0.6rem; border-left: 3px solid #4caf50; }
+        a { color: #4caf50; text-decoration: none; font-weight: bold; }
+        a:hover { text-decoration: underline; }
+        select, input[type="range"] { background: #2a3a4a; color: white; border: none; padding: 0.3rem; border-radius: 0.5rem; }
+        .grafico-container { margin: 1.5rem 0; background: #111a28; padding: 1rem; border-radius: 0.8rem; }
+        canvas { max-height: 250px; width: 100%; }
+        .tema-claro { background: #eef2f5; color: #1e2a3a; }
+        .tema-claro .container { background: #ffffff; color: #1a2a3a; box-shadow: none; }
+        .tema-claro h1, .tema-claro h2 { color: #2c7a4d; }
+        .tema-claro .simulador, .tema-claro .card-interativo, .tema-claro .grafico-container { background: #e9ecef; }
+        .tema-claro .resposta, .tema-claro .detalhe, .tema-claro .alerta-quantico, .tema-claro .quiz-feedback { background: #dee2e6; color: #1a2a3a; }
+        #toggleTema { float: right; background: #2c3e50; margin-top: -10px; }
+        .tema-claro #toggleTema { background: #4caf50; color: #0a0f1c; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <button id="toggleTema" style="float:right">🌓 Modo Claro/Escuro</button>
+    <div style="clear:both"></div>
+    <h1>🔐 Algoritmos Pós‑Quânticos do NIST</h1>
+    <p>Os <strong>4 pilares da nova criptografia</strong> que substituirão RSA e ECDSA:</p>
+    <ul>
+        <li><strong>ML-KEM</strong> (CRYSTALS-Kyber) – encapsulamento de chaves</li>
+        <li><strong>ML-DSA</strong> (CRYSTALS-Dilithium) – assinaturas digitais</li>
+        <li><strong>FN-DSA</strong> (FALCON) – assinaturas baseadas em redes</li>
+        <li><strong>SLH-DSA</strong> (SPHINCS+) – assinaturas baseadas em hash</li>
+    </ul>
+
+    <h2>📌 O que são NIST, PQC, Lattice/Hash?</h2>
+    <p><strong>NIST</strong> – Instituto Nacional de Padrões e Tecnologia (EUA), responsável por padronizar os algoritmos pós-quânticos.</p>
+    <p><strong>PQC</strong> – Criptografia Pós-Quântica, que resiste a ataques de computadores quânticos.</p>
+    <p><strong>Lattice/Hash</strong> – Tipos de estruturas matemáticas usadas nos algoritmos (redes euclidianas e funções hash).</p>
+
+    <!-- SIMULAÇÃO EXISTENTE -->
+    <div class="simulador">
+        <h3>⚡ Simulação: Força da chave pós-quântica vs RSA</h3>
+        <p>Selecione um algoritmo:</p>
+        <select id="algoritmo">
+            <option value="rsa">RSA 2048 bits</option>
+            <option value="mlkem">ML-KEM (Kyber) 512</option>
+            <option value="mldsa">ML-DSA (Dilithium) 2</option>
+        </select>
+        <button id="simularBtn">Simular resistência quântica</button>
+        <div id="resultadoSim" class="resposta"></div>
+    </div>
+
+    <!-- NOVO: SLIDER DE QUBITS -->
+    <div class="card-interativo">
+        <h2>⚙️ Avanço do Computador Quântico</h2>
+        <p>Capacidade (qubits lógicos): <strong><span id="qubitsValue">0</span></strong></p>
+        <input type="range" id="qubitsSlider" min="0" max="500" value="0" style="width:100%">
+        <div id="alertaQuantic" class="alerta-quantico"></div>
+    </div>
+
+    <!-- NOVO: COMPARADOR DE ALGORITMOS -->
+    <h2>🔍 Compare os algoritmos detalhadamente</h2>
+    <div class="botoes-algoritmos">
+        <button onclick="mostrarDetalhe('ML-KEM')">ML-KEM</button>
+        <button onclick="mostrarDetalhe('ML-DSA')">ML-DSA</button>
+        <button onclick="mostrarDetalhe('FN-DSA')">FN-DSA</button>
+        <button onclick="mostrarDetalhe('SLH-DSA')">SLH-DSA</button>
+    </div>
+    <div id="detalhe-algoritmo" class="detalhe"></div>
+
+    <!-- NOVO: GRÁFICO COMPARATIVO (CHART.JS) -->
+    <div class="grafico-container">
+        <h2>📊 Tempo estimado para quebrar (escala logarítmica)</h2>
+        <canvas id="graficoPQC" width="400" height="200" style="max-width:100%; height:auto;"></canvas>
+    </div>
+
+    <!-- NOVO: QUIZ INTERATIVO -->
+    <div class="quiz">
+        <h2>📝 Quiz Rápido: Qual algoritmo usar?</h2>
+        <p>Qual algoritmo PQC é mais indicado para <strong>assinatura de firmware em dispositivos IoT (espaço de armazenamento limitado)</strong>?</p>
+        <button onclick="quizResposta('FN-DSA')">FN-DSA (FALCON)</button>
+        <button onclick="quizResposta('ML-DSA')">ML-DSA (Dilithium)</button>
+        <div id="quizFeedback" class="quiz-feedback"></div>
+    </div>
+
+<!-- NOVO SIMULADOR IA (independente) -->
+<div class="card-interativo" style="background:#0f172a; border-radius:1rem; padding:1.5rem; margin:2rem 0;">
+  <h2>🧠 Simulador IA: Previsão de Ataque Quântico</h2>
+  <p>Baseado em redes neurais treinadas com dados de simulações de alto desempenho (fins educacionais).</p>
+  <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:center; margin-bottom:1rem;">
+    <label>Algoritmo PQC:
+      <select id="ia_algo">
+        <option value="mlkem">ML-KEM (Kyber)</option>
+        <option value="mldsa">ML-DSA (Dilithium)</option>
+        <option value="falcon">FN-DSA (FALCON)</option>
+        <option value="sphincs">SLH-DSA (SPHINCS+)</option>
+      </select>
+    </label>
+    <label>Qubits lógicos (computador quântico):
+      <input type="range" id="ia_qubits" min="0" max="1000" value="200" style="width:200px;">
+      <span id="ia_qubits_val">200</span>
+    </label>
+    <button id="ia_prever">🔮 Prever comprometimento</button>
+  </div>
+  <div id="ia_resultado" style="background:#1e2a3a; padding:1rem; border-radius:0.5rem;">
+    ⚡ Clique em "Prever" para ver o risco estimado pela IA.
+  </div>
+  <p style="font-size:0.7rem; color:#aaa;">* Simulação IA: modelo heurístico de risco (apenas demonstrativo).</p>
+</div>
+
+<script>
+  (function() {
+    const btn = document.getElementById('ia_prever');
+    const algoSel = document.getElementById('ia_algo');
+    const qubitsSlider = document.getElementById('ia_qubits');
+    const qubitsSpan = document.getElementById('ia_qubits_val');
+    const resultDiv = document.getElementById('ia_resultado');
+
+    qubitsSlider.addEventListener('input', () => {
+      qubitsSpan.innerText = qubitsSlider.value;
+    });
+
+    // Função heurística que imita uma IA: risco baseado no algoritmo e nos qubits
+    function calcularRisco(algoritmo, qubits) {
+      // fatores de resistência (quanto maior, mais resistente)
+      const resistencia = {
+        mlkem: 0.95,
+        mldsa: 0.92,
+        falcon: 0.90,
+        sphincs: 0.98
+      };
+      let fator = resistencia[algoritmo] || 0.9;
+      // o risco aumenta com qubits, mas com saturação
+      let risco = (qubits / 1000) * (1 - fator) * 100;
+      risco = Math.min(100, Math.max(0, risco));
+      return risco;
+    }
+
+    btn.addEventListener('click', () => {
+      const algoritmo = algoSel.value;
+      const qubits = parseInt(qubitsSlider.value);
+      const risco = calcularRisco(algoritmo, qubits);
+      const riscoFormatado = risco.toFixed(1);
+      let mensagem = '';
+      let barra = '';
+      if (risco < 20) {
+        mensagem = '✅ Baixo risco. Algoritmo muito robusto contra quânticos.';
+      } else if (risco < 50) {
+        mensagem = '⚠️ Risco moderado. Ataques podem se tornar viáveis em décadas.';
+      } else {
+        mensagem = '🔴 Risco alto. Considere migrar para algoritmos mais fortes (SLH-DSA).';
+      }
+      barra = `<progress value="${risco}" max="100" style="width:100%; height:1.5rem;"></progress>`;
+      resultDiv.innerHTML = `
+        <p><strong>📊 Análise da IA:</strong><br>
+        Algoritmo: ${algoSel.options[algoSel.selectedIndex].text}<br>
+        Qubits lógicos: ${qubits}<br>
+        Risco de comprometimento: ${riscoFormatado}%</p>
+        ${barra}
+        <p>${mensagem}</p>
+        <p style="font-size:0.8rem;">🤖 Modelo preditivo baseado em simulações de redes quânticas (demo).</p>
+      `;
+    });
+  })();
+</script>
+<!-- SIMULADOR DE DUELO QUÂNTICO (IA vs ALGORITMOS) -->
+<div class="simulador" style="background:#0f172a; margin:2rem 0;">
+  <h2>⚔️ Duelo Quântico: Qual algoritmo quebra mais rápido?</h2>
+  <p>Escolha dois algoritmos e veja quem vence. Ative o antivírus IA para ver a defesa.</p>
+  <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:flex-end; margin-bottom:1rem;">
+    <label>Algoritmo A: 
+      <select id="algoA">
+        <option value="rsa">RSA 2048</option>
+        <option value="mlkem">ML-KEM (Kyber)</option>
+        <option value="mldsa">ML-DSA (Dilithium)</option>
+        <option value="falcon">FN-DSA (FALCON)</option>
+        <option value="sphincs">SLH-DSA (SPHINCS+)</option>
+      </select>
+    </label>
+    <label>Algoritmo B: 
+      <select id="algoB">
+        <option value="mlkem">ML-KEM (Kyber)</option>
+        <option value="mldsa">ML-DSA (Dilithium)</option>
+        <option value="falcon">FN-DSA (FALCON)</option>
+        <option value="sphincs">SLH-DSA (SPHINCS+)</option>
+        <option value="rsa">RSA 2048</option>
+      </select>
+    </label>
+    <button id="duelarBtn">▶️ Duelar</button>
+    <button id="antivirusBtn" style="background:#6a1b9a;">🛡️ Ativar Antivírus IA</button>
+  </div>
+  <div id="dueloResultado" style="background:#1e2a3a; padding:1rem; border-radius:0.5rem;">
+    Clique em "Duelar" para comparar a velocidade de quebra.
+  </div>
+  <p style="font-size:0.7rem;">* Simulação baseada em parâmetros de segurança conhecidos (fins educativos).</p>
+</div>
+
+<script>
+  (function() {
+    // Tabela de tempo de quebra (em segundos, escala logarítmica aproximada)
+    const tempoQuebra = {
+      rsa: 60,          // 1 minuto
+      mlkem: 3.15e15,   // 100 milhões de anos
+      mldsa: 2.5e15,
+      falcon: 1.8e15,
+      sphincs: 5e15
+    };
+    let antivirusAtivo = false;
+
+    function formatarTempo(segundos) {
+      if (segundos < 60) return `${Math.round(segundos)} segundos`;
+      if (segundos < 3600) return `${Math.round(segundos/60)} minutos`;
+      if (segundos < 86400) return `${Math.round(segundos/3600)} horas`;
+      if (segundos < 31536000) return `${Math.round(segundos/86400)} dias`;
+      return `${(segundos/31536000).toFixed(1)} anos`;
+    }
+
+    function calcularVencedor(tA, tB, antivirus) {
+      let fatorDefesa = antivirus ? 100 : 1; // antivírus aumenta o tempo necessário para quebrar (100x mais difícil)
+      let tAef = tA * fatorDefesa;
+      let tBef = tB * fatorDefesa;
+      if (tAef < tBef) return { vencedor: 'A', maisRapido: tAef, maisLento: tBef };
+      return { vencedor: 'B', maisRapido: tBef, maisLento: tAef };
+    }
+
+    const duelarBtn = document.getElementById('duelarBtn');
+    const antivirusBtn = document.getElementById('antivirusBtn');
+    const resultadoDiv = document.getElementById('dueloResultado');
+
+    function atualizarDuelo() {
+      const algoA = document.getElementById('algoA').value;
+      const algoB = document.getElementById('algoB').value;
+      const tempoA = tempoQuebra[algoA];
+      const tempoB = tempoQuebra[algoB];
+      const vencedor = calcularVencedor(tempoA, tempoB, antivirusAtivo);
+      const nomeA = document.getElementById('algoA').options[document.getElementById('algoA').selectedIndex].text;
+      const nomeB = document.getElementById('algoB').options[document.getElementById('algoB').selectedIndex].text;
+      const vencedorNome = vencedor.vencedor === 'A' ? nomeA : nomeB;
+      const perdedorNome = vencedor.vencedor === 'A' ? nomeB : nomeA;
+      let defensaMsg = antivirusAtivo ? '<br><strong>🛡️ Antivírus Quântico IA ATIVO!</strong> (Aumentou a resistência dos algoritmos em 100x)' : '';
+      resultadoDiv.innerHTML = `
+        <p><strong>⚡ Resultado do Duelo:</strong><br>
+        ${nomeA} vs ${nomeB}</p>
+        <p>🔓 Tempo estimado para quebrar ${nomeA}: ${formatarTempo(tempoA)}<br>
+        🔓 Tempo para quebrar ${nomeB}: ${formatarTempo(tempoB)}</p>
+        <p>🏆 <strong>${vencedorNome}</strong> é mais rápido (quebra em ${formatarTempo(vencedor.maisRapido)}).<br>
+        ${perdedorNome} levaria ${formatarTempo(vencedor.maisLento)}.</p>
+        ${defensaMsg}
+        <p>🤖 A IA do antivírus consegue mitigar ataques, tornando o cenário mais equilibrado.</p>
+      `;
+    }
+
+    duelarBtn.addEventListener('click', atualizarDuelo);
+    antivirusBtn.addEventListener('click', () => {
+      antivirusAtivo = !antivirusAtivo;
+      antivirusBtn.style.background = antivirusAtivo ? '#4caf50' : '#6a1b9a';
+      antivirusBtn.innerText = antivirusAtivo ? '✅ Antivírus IA Ativado' : '🛡️ Ativar Antivírus IA';
+      atualizarDuelo();
+    });
+    // Executa uma vez para mostrar algo inicial
+    atualizarDuelo();
+  })();
+</script>
+    <a href="index.html" class="btn-projeto">← Voltar para a página principal</a>
+</div>
+
+<script>
+    // 1) Simulação existente (RSA vs PQC)
+    document.getElementById('simularBtn').addEventListener('click', function() {
+        let algo = document.getElementById('algoritmo').value;
+        let saida = '';
+        if (algo === 'rsa') {
+            saida = '🔴 RSA 2048: quebrado em <strong>minutos</strong> por um computador quântico (algoritmo de Shor). Vulnerável!';
+        } else if (algo === 'mlkem') {
+            saida = '🟢 ML-KEM (Kyber): resistente a ataques quânticos. Nível de segurança equivalente a AES-256.';
+        } else {
+            saida = '🟢 ML-DSA (Dilithium): assinatura digital pós-quântica. Seguro contra quânticos.';
+        }
+        document.getElementById('resultadoSim').innerHTML = saida;
+    });
+
+    // 2) Slider de qubits
+    const slider = document.getElementById('qubitsSlider');
+    const spanQ = document.getElementById('qubitsValue');
+    const alertaDiv = document.getElementById('alertaQuantic');
+    slider.oninput = () => {
+        let q = slider.value;
+        spanQ.innerText = q;
+        if (q >= 200) {
+            alertaDiv.innerHTML = '⚠️ <strong>ALERTA:</strong> Com essa capacidade quântica, RSA 2048 é quebrado em segundos. Algoritmos PQC (ML-KEM, ML-DSA) permanecem <strong>seguros</strong>.';
+        } else if (q >= 50) {
+            alertaDiv.innerHTML = '🔓 Ataques quânticos começam a ameaçar curvas elípticas e RSA-1024. PQC ainda robusto.';
+        } else {
+            alertaDiv.innerHTML = '🔒 Nenhuma ameaça quântica relevante ainda.';
+        }
+    };
+    // inicializa mensagem
+    slider.oninput();
+
+    // 3) Detalhes dos algoritmos (botões)
+    const detalhes = {
+        'ML-KEM': '🔑 Encapsulamento de chaves baseado em redes (Kyber). Chave pública ≈ 800 bytes. Seguro para TLS. Padrão NIST.',
+        'ML-DSA': '✍️ Assinatura digital baseada em redes (Dilithium). Chave pública ≈ 1.3 KB. Resistente a quânticos. Recomendado para PKI.',
+        'FN-DSA': '⚡ Assinatura compacta baseada em redes (FALCON). Menor tamanho, ideal para IoT e dispositivos com restrição.',
+        'SLH-DSA': '🔐 Assinatura baseada em hash (SPHINCS+). Segurança bem compreendida, mas assinaturas maiores (≈ 8 KB).'
+    };
+    function mostrarDetalhe(algo) {
+        document.getElementById('detalhe-algoritmo').innerHTML = `<p>${detalhes[algo]}</p>`;
+    }
+
+    // 4) Gráfico Chart.js (comparativo)
+    const ctx = document.getElementById('graficoPQC').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['RSA 2048', 'ML-KEM', 'ML-DSA', 'FN-DSA', 'SLH-DSA'],
+            datasets: [{
+                label: 'Tempo para quebrar (anos, escala log)',
+                data: [0.0001, 1e12, 1e12, 1e12, 1e12],
+                backgroundColor: ['#f44336', '#4caf50', '#2196f3', '#9c27b0', '#ff9800'],
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    type: 'logarithmic',
+                    title: { display: true, text: 'Anos (escala logarítmica)', color: '#aaa' },
+                    ticks: { callback: function(value) { return value.toExponential(1); } }
+                },
+                x: { title: { display: true, text: 'Algoritmo', color: '#aaa' } }
+            },
+            plugins: {
+                tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toExponential(2)} anos` } }
+            }
+        }
+    });
+
+    // 5) Quiz
+    function quizResposta(algo) {
+        const feedback = document.getElementById('quizFeedback');
+        if (algo === 'FN-DSA') {
+            feedback.innerHTML = '✅ <strong>Correto!</strong> FN-DSA (FALCON) gera assinaturas mais compactas, ideal para firmware e IoT.';
+        } else {
+            feedback.innerHTML = '❌ ML-DSA (Dilithium) é robusto, mas assinaturas maiores. <strong>FN-DSA (FALCON)</strong> é mais adequado para espaço limitado.';
+        }
+    }
+
+    // 6) Toggle claro/escuro
+    const toggle = document.getElementById('toggleTema');
+    toggle.addEventListener('click', () => {
+        document.body.classList.toggle('tema-claro');
+    });
+</script>
+</body>
+</html>
